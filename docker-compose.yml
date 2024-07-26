@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  air_caravan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --workers 2
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${password}
+      - POSTGRES_USER=${user}
+      - POSTGRES_DB=${db}
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
